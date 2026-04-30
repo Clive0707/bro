@@ -1,0 +1,61 @@
+board = [' '] * 9
+
+def show():
+    for i in range(0, 9, 3):
+        print(*board[i:i+3], sep=" | ")
+        if i < 6: print("---------")
+
+def win(p):
+    return any(all(board[i]==p for i in c) for c in
+               [(0,1,2),(3,4,5),(6,7,8),
+                (0,3,6),(1,4,7),(2,5,8),
+                (0,4,8),(2,4,6)])
+
+def minimax(maxi):
+    if win('X'): return 1
+    if win('O'): return -1
+    if ' ' not in board: return 0
+
+    best = -10 if maxi else 10
+    for i in range(9):
+        if board[i]==' ':
+            board[i] = 'X' if maxi else 'O'
+            score = minimax(not maxi)
+            board[i] = ' '
+            best = max(best, score) if maxi else min(best, score)
+    return best
+
+def bestMove():
+    best, move = 10, 0
+    print("\nAI evaluating moves:")
+    for i in range(9):
+        if board[i]==' ':
+            board[i]='O'
+            s = minimax(True)
+            board[i]=' '
+            print(f"Position {i}: utility = {s}")
+            if s < best: best, move = s, i
+    print(f"AI chooses position {move} with utility {best}\n")
+    return move
+
+# ---- GAME ----
+turn = input("Go first? (y/n): ").lower()=='y'
+print("Tic Tac Toe")
+
+while True:
+    show()
+
+    if turn:
+        p = int(input("Move (0-8): "))
+        if board[p] != ' ': print("Taken!"); continue
+        board[p] = 'X'
+        if win('X'): show(); print("You win!"); break
+    else:
+        print("Computer's move:")
+        board[bestMove()] = 'O'
+        if win('O'): show(); print("Computer wins!"); break
+
+    if ' ' not in board:
+        show(); print("Draw!"); break
+
+    turn = not turn
