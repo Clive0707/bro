@@ -1,0 +1,68 @@
+def split_data(s):
+    s, t, c, res = s.replace(" ", ""), "", 0, []
+    for ch in s:
+        if ch == "," and c == 0:
+            res.append(t); t = ""
+        else:
+            t += ch
+            if ch == "(": c += 1
+            elif ch == ")": c -= 1
+    return res + [t]
+
+
+initial = split_data(input("Initial: "))
+goal = split_data(input("Goal: "))
+
+plan = []
+print("\nStep 1: Goal Checking")
+
+for i, g in enumerate(goal, 1):
+    print(f"{i}) {g} →", "TRUE" if g in initial else "FALSE")
+
+    if g in initial: continue
+
+    if g.startswith("ON("):
+        x, y = g[3:-1].split(",")
+
+        print("   Preconditions:")
+        for it in initial:
+            if it.startswith("ON(") and y in it:
+                print("   -", it)
+        print(f"   - ONTABLE({x})\n   - CLEAR({x})\n   - CLEAR({y})\n   - ARMEMPTY")
+
+        print("   Postconditions:")
+        print(f"   - {g}\n   - PICK({x})")
+
+        plan.append(f"PICK({x}) → {g}")
+
+    elif g.startswith("CLEAR("):
+        x = g[6:-1]
+
+        for it in initial:
+            if it.startswith("ON(") and it.endswith("," + x + ")"):
+                b = it[3:-1].split(",")[0]
+
+                print("   Preconditions:")
+                print(f"   - {it}\n   - CLEAR({b})\n   - ARMEMPTY")
+
+                print("   Postconditions:")
+                print(f"   - CLEAR({x})\n   - PICK({b})")
+
+                plan.append(f"PICK({b}) → ONTABLE({b})")
+                break
+
+    elif g.startswith("ONTABLE("):
+        x = g[9:-1]
+
+        print("   Preconditions:")
+        print(f"   - CLEAR({x})\n   - ARMEMPTY")
+
+        print("   Postconditions:")
+        print(f"   - {g}\n   - PICK({x})")
+
+        plan.append(f"PICK({x}) → {g}")
+
+
+print("\nFinal Plan:")
+for i, p in enumerate(plan, 1):
+    print(f"{i}. {p}")
