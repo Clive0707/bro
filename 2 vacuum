@@ -1,0 +1,50 @@
+status_A = input("Enter status of A (clean/dirty): ").lower()
+status_B = input("Enter status of B (clean/dirty): ").lower()
+
+# For Location A
+print("\nCurrent Status: Location A, Status:", status_A)
+
+if status_A == "dirty":
+    action_A = "Suck"
+else:
+    action_A = "Move Right"
+
+print("Action:", action_A)
+
+# For Location B
+print("\nCurrent Status: Location B, Status:", status_B)
+
+if status_B == "dirty":
+    action_B = "Suck"
+else:
+    action_B = "Move Left"
+
+print("Action:", action_B)
+# Input current location
+current_loc = input("Enter current location (A/B): ").upper()
+
+# Input status
+status_A = input("Enter status of A (clean/dirty): ").lower()
+status_B = input("Enter status of B (clean/dirty): ").lower()
+
+# Decision making
+if current_loc == "A":
+    print("\nCurrent Location: A, Status:", status_A)
+    
+    if status_A == "dirty":
+        action = "Suck"
+    else:
+        action = "Move Right"
+        
+elif current_loc == "B":
+    print("\nCurrent Location: B, Status:", status_B)
+    
+    if status_B == "dirty":
+        action = "Suck"
+    else:
+        action = "Move Left"
+
+else:
+    action = "Invalid Location"
+
+print("Action:", action)
