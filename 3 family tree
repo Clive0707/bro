@@ -1,0 +1,124 @@
+male(clive).
+male(gildes).
+male(stanny).
+male(dominic).
+male(kevin).
+male(thomas).
+male(lisbon).
+male(joel).
+male(benhur).
+male(jayden).
+male(reeve).
+
+female(grissel).
+female(carol).
+female(flory).
+female(christiana).
+female(barbara).
+female(maria).
+female(bethel).
+female(priyanka).
+female(mayanka).
+female(joybell).
+female(mishel).
+female(meaghan).
+
+/* =========================
+   ---------- Father Facts ----------
+   ========================= */
+
+father(stanny, carol).
+father(stanny, joybell).
+father(stanny, joel).
+
+father(dominic, gildes).
+father(dominic, kevin).
+father(dominic, barbara).
+
+father(gildes, clive).
+father(gildes, grissel).
+
+father(kevin, bethel).
+father(kevin, benhur).
+
+father(thomas, priyanka).
+father(thomas, mayanka).
+
+father(lisbon, reeve).
+
+father(joel, jayden).
+father(joel, meaghan).
+
+/* =========================
+   ---------- Mother Facts ----------
+   ========================= */
+
+mother(flory, carol).
+mother(flory, joybell).
+mother(flory, joel).
+
+mother(christiana, gildes).
+mother(christiana, kevin).
+mother(christiana, barbara).
+
+mother(carol, clive).
+mother(carol, grissel).
+
+mother(maria, bethel).
+mother(maria, benhur).
+
+mother(barbara, priyanka).
+mother(barbara, mayanka).
+
+mother(joybell, reeve).
+
+mother(mishel, jayden).
+mother(mishel, meaghan).
+
+
+/* -------- Rules -------- */
+parent(X,Y) :- father(X,Y).
+parent(X,Y) :- mother(X,Y).
+siblings(X,Y) :-
+    father(F,X), father(F,Y),
+    mother(M,X), mother(M,Y),
+    X \= Y.
+brother(X,Y) :-
+    siblings(X,Y),
+    male(X).
+sister(X,Y) :-
+    siblings(X,Y),
+    female(X).
+grandfather(X,Y) :-
+    father(X,Z),
+    parent(Z,Y).
+grandmother(X,Y) :-
+    mother(X,Z),
+    parent(Z,Y).
+wife(X,Y) :-
+    mother(X,C),
+    father(Y,C),
+    !.
+husband(X,Y) :-
+    father(X,C),
+    mother(Y,C),
+    !.
+uncle(X,Y) :-
+    parent(P,Y),
+    brother(X,P).
+uncle(X,Y) :-
+    parent(P,Y),
+    sister(S,P),
+    husband(X,S).
+aunt(X,Y) :-
+    parent(P,Y),
+    sister(X,P).
+aunt(X,Y) :-
+    parent(P,Y),
+    brother(B,P),
+    wife(X,B).
+cousin(X,Y) :-
+    parent(P1,X),
+    parent(P2,Y),
+    siblings(P1,P2),
+    X \= Y.
