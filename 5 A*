@@ -1,0 +1,76 @@
+def h(s, g):
+    return sum(s[i][j] != g[i][j] and s[i][j] != 0 for i in range(3) for j in range(3))
+
+def moves(s):
+    x, y = [(i, j) for i in range(3) for j in range(3) if s[i][j] == 0][0]
+    dirs = [(-1,0,"Up"), (1,0,"Down"), (0,-1,"Left"), (0,1,"Right")]
+    res = []
+    for dx, dy, a in dirs:
+        nx, ny = x+dx, y+dy
+        if 0 <= nx < 3 and 0 <= ny < 3:
+            n = [r[:] for r in s]
+            n[x][y], n[nx][ny] = n[nx][ny], n[x][y]
+            res.append((n, a))
+    return res
+
+def astar(start, goal):
+    open_list = [(start, 0, [], "Start")]
+    visited = set()
+
+    while open_list:
+        open_list.sort(key=lambda x: x[1] + h(x[0], goal))
+        s, g, path, act = open_list.pop(0)
+
+        print("\nChosen Action:", act)
+        for r in s: print(r)
+
+        h_val = h(s, goal)
+        f = g + h_val
+        print("g(n) =", g)
+        print("h(n) =", h_val)
+        print("f(n) =", h_val, "+", g, "=", f)
+
+        if s == goal:
+            print("\nGoal Reached!")
+            print("Solution Path:", " -> ".join(path))
+            return
+
+        visited.add(tuple(map(tuple, s)))
+
+        print("\nPossible moves:")
+        for ns, a in moves(s):
+            g2 = g + 1
+            h2 = h(ns, goal)
+
+            print("\nAction:", a)
+            for r in ns: print(r)
+            print("g(n) =", g2)
+            print("h(n) =", h2)
+            print("f(n) =", h2, "+", g2, "=", g2 + h2)
+
+            t = tuple(map(tuple, ns))
+            if t not in visited:
+                open_list.append((ns, g2, path + [a], a))
+
+# -------- SAFE INPUT --------
+def get_state(name):
+    state = []
+    print(f"\nEnter {name} state (3 rows, space-separated, use 0 for blank):")
+    for _ in range(3):
+        while True:
+            try:
+                row = list(map(int, input().split()))
+                if len(row) == 3:
+                    state.append(row)
+                    break
+                else:
+                    print("Enter exactly 3 numbers")
+            except:
+                print("Only integers allowed")
+    return state
+
+start = get_state("START")
+goal = get_state("GOAL")
+
+# -------- RUN --------
+astar(start, goal)
