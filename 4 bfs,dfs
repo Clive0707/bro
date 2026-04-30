@@ -1,0 +1,33 @@
+def search(graph, start, goal, mode):
+    s, visited, parent = [start], [], {start: None}
+
+    while s:
+        node = s.pop(0 if mode == "bfs" else -1)
+
+        if node not in visited:
+            visited.append(node)
+
+            if node in goal:
+                path = []
+                while node:
+                    path.append(node)
+                    node = parent[node]
+                print(mode.upper(), "Path:", *reversed(path))
+                return
+
+            nbrs = graph[node] if mode == "bfs" else reversed(graph[node])
+            for n in nbrs:
+                if n not in visited and n not in s:
+                    s.append(n)
+                    parent[n] = node
+
+    print(mode.upper(), "Goal Not Found")
+
+# ---- INPUT ----
+graph = {input("Node: "): input("Neighbors: ").split() for _ in range(int(input("Nodes: ")))}
+start = input("Start: ")
+goal = input("Goal: ").split()
+
+# ---- CALL ----
+search(graph, start, goal, "bfs")
+search(graph, start, goal, "dfs")
