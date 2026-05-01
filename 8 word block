@@ -1,0 +1,91 @@
+class BlockWorldPlanner:
+    def __init__(self, init, goal):
+        self.initial_state = init
+        self.goal_state = goal
+        self.plan = []
+
+    def print_state(self, state):
+        stacks = self.get_stacks(state)
+        h = max(len(s) for s in stacks)
+        print("\nCurrent State:")
+        for i in range(h-1, -1, -1):
+            print("".join(f"  {s[i]}  " if i < len(s) else "     " for s in stacks))
+        print("-" * (5 * len(stacks)))
+
+    def get_stacks(self, state):
+        above = {}
+        for b, p in state.items():
+            if p != "Table":
+                above.setdefault(p, []).append(b)
+
+        stacks = []
+        for root in [b for b, p in state.items() if p == "Table"]:
+            stack, cur = [root], root
+            while cur in above:
+                cur = above[cur][0]
+                stack.append(cur)
+            stacks.append(stack)
+        return stacks
+
+    def is_clear(self, b, state):
+        return b not in state.values()
+
+    def move_block(self, b, dest, state, step):
+        if not self.is_clear(b, state):
+            top = next(k for k, v in state.items() if v == b)
+            print(f"\nStep {step}: Move {top} from {b} to Table")
+            self.plan.append(f"Step {step}: Move {top} from {b} to Table")
+            state[top] = "Table"
+            self.print_state(state)
+            return self.move_block(b, dest, state, step+1)
+
+        if state[b] != dest:
+            print(f"\nStep {step}: Move {b} to {dest}")
+            self.plan.append(f"Step {step}: Move {b} to {dest}")
+            state[b] = dest
+            self.print_state(state)
+            step += 1
+
+        return step
+
+    def generate_plan(self):
+        print("\nInitial Configuration:")
+        self.print_state(self.initial_state)
+        state, step = self.initial_state.copy(), 1
+
+        # build goal stack
+        stack = []
+        b = next(x for x, p in self.goal_state.items() if p == "Table")
+        while b:
+            stack.append(b)
+            b = next((x for x, p in self.goal_state.items() if p == b), None)
+
+        for b in stack:
+            step = self.move_block(b, self.goal_state[b], state, step)
+
+        print("\nGoal state achieved!")
+
+    def display_plan(self):
+        print("\nFinal Plan:")
+        for s in self.plan:
+            print(s)
+
+
+# -------- INPUT --------
+init, goal = {}, {}
+n = int(input("Enter number of blocks: "))
+
+print("\nEnter initial state (Block on Position)")
+for _ in range(n):
+    b, _, p = input().split()
+    init[b] = p
+
+print("\nEnter goal state (Block on Position)")
+for _ in range(n):
+    b, _, p = input().split()
+    goal[b] = p
+
+# -------- RUN --------
+planner = BlockWorldPlanner(init, goal)
+planner.generate_plan()
+planner.display_plan()
